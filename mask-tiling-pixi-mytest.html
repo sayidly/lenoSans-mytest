@@ -12,10 +12,83 @@
             width: 100%;
             height: 100%;
             overflow: hidden;
+            outline: 0;
+            margin: 0;
+            padding: 0;
+            cursor: move;
         }
     </style>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/5.0.4/pixi.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.6/dat.gui.js"></script>
 </head>
 <body>
+    <script src="js/leon.js"></script>
+    <script src="js/util.js"></script>
+
+    <script>
+        let container, loader, textures = [];
+        let tiling = [], cur = -1;
+        let leon, controll;
+
+        function init() {
+            generatePixi(0x000000);
+
+            container = new PIXI.Container();
+            stage.addChild(container);
+
+            loader = new PIXI.Loader();
+            loader.add('tile1', 'data/tile1.png')
+            .add('tile2', 'data/tile2.png')
+            .add('tile3', 'data/tile3.png')
+            .add('tile4', 'data/tile4.png')
+            .add('tile5', 'data/tile5.png')
+            .add('tile6', 'data/tile6.png');
+
+            loader.load((loader, resources) => {
+                textures.push(resources.tile1.texture);
+                textures.push(resources.tile2.texture);
+                textures.push(resources.tile3.texture);
+                textures.push(resources.tile4.texture);
+                textures.push(resources.tile5.texture);
+                textures.push(resources.tile6.texture);
+
+                textures = shuffle(textures);
+
+                loaded();
+            });
+        }
+
+        function loaded() {
+            controll = {
+                align: {},
+            };
+
+            leon = new LeonSans({
+                text: '012\n345',
+                size: getSize(400),
+                weight: 900,
+                tracking: 1,
+                leading: -1,
+                align: 'center'
+            });
+
+            leon.on('update', (model) => {
+                update();;
+            });
+
+            const gui = new dat.GUI();
+            gui.add(leon, 'text');
+            gui.add(leon, 'size', 10, 1000);
+            gui.add(leon, 'weight', 1, 900);
+
+            requestAnimationFrame(animate);
+        }
+
+        window.onload = () => {
+            init();
+        };
+    </script>
     
 </body>
 </html>
